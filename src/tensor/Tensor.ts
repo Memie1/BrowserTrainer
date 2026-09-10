@@ -45,11 +45,25 @@ export class Tensor {
     // uses the Tensor's strides to calculate flat index
     
     get(...indices: number[]): number {
-    let flatIndex = 0;
+        // if the indeces are not same as shape throw error
+        if (indices.length !== this.shape.length) {
+            throw new Error("Wrong number of indices");
+        }
 
-    for (let i = 0; i < indices.length; i++) {
-        flatIndex += indices[i] * this.strides[i];
-    }
+        // why twice?
+        for (let i = 0; i < indices.length; i++) {
+            if (indices[i] < 0 || indices[i] >= this.shape[i]) {
+                throw new Error(`Index ${indices[i]} is out of bounds`);
+            }
+        }
+
+        let flatIndex = 0;
+
+
+        for (let i = 0; i < indices.length; i++) {
+            // index * stride for each dimension = flat index
+            flatIndex += indices[i] * this.strides[i];
+        }
 
     return this.data[flatIndex];
     }
