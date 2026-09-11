@@ -1,5 +1,6 @@
 // Tensor = Float32Array + shape + strides
 
+type TensorArray = number | TensorArray[];
 
 export class Tensor {
     // data loaded into a Float32Array by the constructor
@@ -39,7 +40,67 @@ export class Tensor {
             this.strides[i] = stride;
             stride *= shape[i];
         }
-        // TODO: validate shape, calculate strides, ensure data length matches shape
+    }
+
+    // Create a Tensor from a nested array
+    static fromArray(input: TensorArray): Tensor{
+        // get the shape from input array
+        const shape = Tensor.getShape(input);
+
+        // prepare for 32 bit float array
+        const flattened: number[] = [];
+
+        // flatten the input array into a 1D array (but where is flattend defined?)
+        Tensor.flatten(input, flattened);
+
+        return new Tensor (new Float32Array(flattened), shape);
+    }
+
+    // calculate shape of nested array
+    private static getShape(input: TensorArray): number[] {
+
+        // A single number has no dimensions below it
+        // so it would have no shape
+        if (typeof input === "number") {
+            return [];
+        }
+        // An empty array has a shape of [0]
+        if (input.length === 0) {
+            return [0];
+        }
+
+        // Find the shape of the first item
+        // WHY IS THIS CALLING ITSELF??????
+        const childShape = Tensor.getShape(input[0]);
+
+        // Check that all items have the same shape
+        for (let i = 1; i < input.length; i++) {
+            const currentShape = Tensor.getShape(input[i]);
+
+        // make sure every child shape is the same as the first child shape
+            if(
+                currentShape.length !== childShape.length ||
+                currentShape.some(
+                    (size, index) => size !== childShape[index]
+                )
+            ) {
+                throw new Error("All items must have the same shape");
+            }
+        }
+
+        // Return the shape of the input array
+        return [input.length, ...childShape];
+    }
+
+    private static flatten(input: TensorArray, output: number[]): void {
+        if (typeof input === "number"){
+            output.push(input);
+            return; 
+        }
+
+        for (const item of input) {
+            Tensor.flatten(item, output);
+        }
     }
 
     // uses the Tensor's strides to calculate flat index

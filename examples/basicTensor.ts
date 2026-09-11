@@ -1,10 +1,12 @@
-import {Tensor} from '../src/tensor/Tensor';
+import { Tensor } from "../src/tensor/Tensor";
 
-const tensor = new Tensor(
-    new Float32Array([1,2,3,4,5,6]),
-    [2,3 ] // define shape
-)
+const tensor = Tensor.fromArray([
+    [10, 20, 30],
+    [40, 50, 60]
+]);
 
-console.log(tensor.shape);
-console.log(tensor.strides);
-console.log(tensor.get(1, 2));
+console.log("Data:", tensor.data);
+console.log("Shape:", tensor.shape);
+console.log("Strides:", tensor.strides);
+
+console.log("Value:", tensor.get(1, 2));
