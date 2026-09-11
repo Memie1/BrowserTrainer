@@ -43,14 +43,13 @@ export class Tensor {
     }
 
     // uses the Tensor's strides to calculate flat index
-    
     get(...indices: number[]): number {
         // if the indeces are not same as shape throw error
         if (indices.length !== this.shape.length) {
             throw new Error("Wrong number of indices");
         }
 
-        // why twice?
+        // now check if the indices are within bounds of the shape
         for (let i = 0; i < indices.length; i++) {
             if (indices[i] < 0 || indices[i] >= this.shape[i]) {
                 throw new Error(`Index ${indices[i]} is out of bounds`);
